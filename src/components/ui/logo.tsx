@@ -18,15 +18,15 @@ export function Logo({
   className 
 }: LogoProps) {
   const logoSizes = {
-    default: { width: 200, height: 50 },
-    sidebar: { width: 150, height: 40 },
-    navbar: { width: 180, height: 45 },
+    default: { width: 160, height: 40 },
+    sidebar: { width: 120, height: 32 },
+    navbar: { width: 140, height: 36 },
   };
   
   const { width, height } = logoSizes[variant];
   
   const logoContent = (
-    <div className={cn("relative flex items-center", className)}>
+    <div className={cn("relative flex items-center h-[40px]", className)}>
       <Image
         src="/images/logo.png"
         alt="SAAS Marketplace Logo"
