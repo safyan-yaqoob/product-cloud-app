@@ -1,8 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
 import {
   Card,
   CardContent,
@@ -18,8 +16,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { ArrowUpRight, ArrowDownRight, DollarSign, Users, CreditCard, TrendingUp, Loader2 } from "lucide-react"
 import { Invoice, Transaction, billingApi } from "@/lib/api/billing"
+import { CreditCard, DollarSign, Loader2, TrendingUp, Users } from "lucide-react"
+import Link from "next/link"
+import { useEffect, useState } from "react"
 
 // Fallback dummy data with consistent date strings
 const currentDate = new Date().toISOString()

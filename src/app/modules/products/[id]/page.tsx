@@ -1,206 +1,374 @@
 "use client"
 
-import { useState } from "react"
-import { type Product, type ProductPlan } from "@/lib/api"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import Image from 'next/image'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { useParams } from "next/navigation"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Plus, Trash2, ImagePlus } from "lucide-react"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-// Dummy products data
-const dummyProducts: Product[] = [
-  {
-    id: "1",
-    name: "Premium Widget",
-    description: "A high-quality widget with advanced features",
-    price: 99.99,
-    status: "active",
-    createdAt: new Date().toISOString(),
-    sku: "WID-001",
-    category: "Widgets",
-    stock: 100
-  },
-  {
-    id: "2",
-    name: "Basic Widget",
-    description: "A simple widget for everyday use",
-    price: 49.99,
-    status: "active",
-    createdAt: new Date().toISOString(),
-    sku: "WID-002",
-    category: "Widgets",
-    stock: 50
-  },
-  {
-    id: "3",
-    name: "Deluxe Widget",
-    description: "A premium widget with luxury features",
-    price: 199.99,
-    status: "inactive",
-    createdAt: new Date().toISOString(),
-    sku: "WID-003",
-    category: "Widgets",
-    stock: 25
+interface Plan {
+  id: string;
+  name: string;
+  description: string;
+  features: string[];
+  pricing: {
+    monthly: number;
+    annual: number;
+  };
+}
+
+interface ProductForm {
+  name: string;
+  slug: string;
+  description: string;
+  logo: File | null;
+  plans: Plan[];
+  status: 'active' | 'draft';
+}
+
+interface Props {
+  params: {
+    id: string;
+  };
+}
+
+// Dummy data - replace with API call
+const mockProduct: ProductForm = {
+  name: 'Enterprise Analytics Suite',
+  slug: 'enterprise-analytics',
+  description: 'Advanced analytics and reporting platform for businesses',
+  logo: null,
+  status: 'active',
+  plans: [
+    {
+      id: '1',
+      name: 'Basic',
+      description: 'Perfect for small teams',
+      features: [
+        'Up to 5 team members',
+        'Basic analytics dashboard',
+        'Email support',
+        '5GB storage',
+      ],
+      pricing: {
+        monthly: 49,
+        annual: 470,
+      },
+    },
+    {
+      id: '2',
+      name: 'Premium',
+      description: 'Best for growing businesses',
+      features: [
+        'Up to 20 team members',
+        'Advanced analytics',
+        'Priority email support',
+        '20GB storage',
+        'Custom reports',
+      ],
+      pricing: {
+        monthly: 99,
+        annual: 990,
+      },
+    },
+  ],
+};
+
+export default function EditProductPage({ params }: Props) {
+  const router = useRouter()
+  const [activeTab, setActiveTab] = useState<'info' | 'plans'>('info')
+  const [formData, setFormData] = useState<ProductForm>(mockProduct)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+
+  useEffect(() => {
+    // Here you would fetch the product data using the ID
+    console.log('Fetching product:', params.id)
+  }, [params.id])
+
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setFormData({ ...formData, logo: file })
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
   }
-]
 
-// Dummy plans data
-const dummyPlans: ProductPlan[] = [
-  {
-    id: "1",
-    productId: "1",
-    name: "Premium Monthly",
-    description: "Monthly subscription for Premium Widget",
-    price: 9.99,
-    billingCycle: "monthly",
-    features: ["All Premium Features", "Priority Support", "Monthly Updates"],
-    status: "active",
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: "2",
-    productId: "1",
-    name: "Premium Yearly",
-    description: "Yearly subscription for Premium Widget",
-    price: 99.99,
-    billingCycle: "yearly",
-    features: ["All Premium Features", "Priority Support", "Yearly Updates", "2 Months Free"],
-    status: "active",
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: "3",
-    productId: "2",
-    name: "Basic Monthly",
-    description: "Monthly subscription for Basic Widget",
-    price: 4.99,
-    billingCycle: "monthly",
-    features: ["Basic Features", "Email Support", "Monthly Updates"],
-    status: "active",
-    createdAt: new Date().toISOString()
+  const handlePlanChange = (index: number, field: string, value: string | number) => {
+    const updatedPlans = [...formData.plans]
+    if (field.includes('.')) {
+      const [parent, child] = field.split('.')
+      const parentObj = updatedPlans[index][parent as keyof Plan] as Record<string, number>
+      updatedPlans[index] = {
+        ...updatedPlans[index],
+        [parent]: {
+          ...parentObj,
+          [child]: value,
+        },
+      }
+    } else {
+      updatedPlans[index] = {
+        ...updatedPlans[index],
+        [field]: value,
+      }
+    }
+    setFormData({ ...formData, plans: updatedPlans })
   }
-]
 
-export default function ProductDetailsPage() {
-  const params = useParams()
-  const [product] = useState<Product | undefined>(
-    dummyProducts.find((p) => p.id === params.id)
-  )
-  const [plans] = useState<ProductPlan[]>(
-    dummyPlans.filter((plan) => plan.productId === params.id)
-  )
+  const handleFeatureChange = (planIndex: number, featureIndex: number, value: string) => {
+    const updatedPlans = [...formData.plans]
+    updatedPlans[planIndex].features[featureIndex] = value
+    setFormData({ ...formData, plans: updatedPlans })
+  }
 
-  if (!product) {
-    return <div className="p-6">Product not found</div>
+  const addFeature = (planIndex: number) => {
+    const updatedPlans = [...formData.plans]
+    updatedPlans[planIndex].features.push('')
+    setFormData({ ...formData, plans: updatedPlans })
+  }
+
+  const removeFeature = (planIndex: number, featureIndex: number) => {
+    const updatedPlans = [...formData.plans]
+    updatedPlans[planIndex].features.splice(featureIndex, 1)
+    setFormData({ ...formData, plans: updatedPlans })
+  }
+
+  const addPlan = () => {
+    const newPlan: Plan = {
+      id: String(formData.plans.length + 1),
+      name: '',
+      description: '',
+      features: [''],
+      pricing: {
+        monthly: 0,
+        annual: 0,
+      },
+    }
+    setFormData({
+      ...formData,
+      plans: [...formData.plans, newPlan],
+    })
+  }
+
+  const removePlan = (index: number) => {
+    const updatedPlans = formData.plans.filter((_, i) => i !== index)
+    setFormData({ ...formData, plans: updatedPlans })
+  }
+
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    console.log('Updating product:', formData)
+    try {
+      // Here you would make an API call to update the product
+      router.push('/modules/products')
+    } catch (error) {
+      console.error('Failed to update product:', error)
+    }
   }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Product Details</h1>
-        <div className="space-x-2">
-          <Link href="/modules/products">
-            <Button variant="outline">Back to Products</Button>
-          </Link>
-          <Link href={`/modules/products/${product.id}/edit`}>
-            <Button>Edit Product</Button>
-          </Link>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <h2 className="text-xl font-semibold mb-4">{product.name}</h2>
-            <p className="text-gray-600 mb-4">{product.description}</p>
-            <div className="space-y-2">
-              <p><span className="font-medium">Price:</span> ${product.price}</p>
-              <p>
-                <span className="font-medium">Status:</span>{" "}
-                <span
-                  className={`px-2 py-1 rounded-full text-xs ${
-                    product.status === "active"
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
-                  }`}
-                >
-                  {product.status}
-                </span>
-              </p>
-              <p><span className="font-medium">Created At:</span> {new Date(product.createdAt).toLocaleDateString()}</p>
-            </div>
-          </div>
-          <div className="border-l pl-6">
-            <h3 className="text-lg font-semibold mb-4">Additional Information</h3>
-            <div className="space-y-2">
-              <p><span className="font-medium">SKU:</span> {product.sku || "N/A"}</p>
-              <p><span className="font-medium">Category:</span> {product.category || "Uncategorized"}</p>
-              <p><span className="font-medium">Stock:</span> {product.stock || 0} units</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg shadow p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold">Product Plans</h2>
-          <Link href={`/modules/plans/create?productId=${product.id}`}>
-            <Button>Add Plan</Button>
-          </Link>
+    <div className="py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold">Edit Product</h1>
+          <Button variant="outline" onClick={() => router.push('/modules/products')}>
+            Back to Products
+          </Button>
         </div>
 
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Plan Name</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Billing Cycle</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {plans.map((plan) => (
-              <TableRow key={plan.id}>
-                <TableCell>{plan.name}</TableCell>
-                <TableCell>{plan.description}</TableCell>
-                <TableCell>${plan.price}</TableCell>
-                <TableCell className="capitalize">{plan.billingCycle}</TableCell>
-                <TableCell>
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs ${
-                      plan.status === "active"
-                        ? "bg-green-100 text-green-800"
-                        : "bg-red-100 text-red-800"
-                    }`}
-                  >
-                    {plan.status}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <div className="flex space-x-2">
-                    <Link href={`/modules/plans/${plan.id}`}>
-                      <Button variant="ghost" size="sm">
-                        View
-                      </Button>
-                    </Link>
-                    <Button variant="ghost" size="sm">
-                      Edit
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'info' | 'plans')}>
+          <TabsList className="grid w-full grid-cols-2 mb-8">
+            <TabsTrigger value="info">Product Information</TabsTrigger>
+            <TabsTrigger value="plans">Plans & Pricing</TabsTrigger>
+          </TabsList>
+
+          {activeTab === 'info' ? (
+            <Card>
+              <CardHeader>
+                <CardTitle>Product Information</CardTitle>
+                <CardDescription>
+                  Update your product details
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form className="space-y-6">
+                  <div>
+                    <Label htmlFor="name">Product Name</Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="slug">URL Slug</Label>
+                    <Input
+                      id="slug"
+                      value={formData.slug}
+                      onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="description">Description</Label>
+                    <Textarea
+                      id="description"
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      rows={4}
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Product Logo</Label>
+                    <div className="mt-1 flex items-center space-x-4">
+                      {previewUrl ? (
+                        <div className="relative w-20 h-20">
+                          <Image
+                            src={previewUrl}
+                            alt="Logo preview"
+                            fill
+                            className="rounded-lg object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-20 h-20 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center">
+                          <ImagePlus className="h-8 w-8 text-gray-400" />
+                        </div>
+                      )}
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoChange}
+                        className="max-w-xs"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end">
+                    <Button type="submit" onClick={handleSubmit}>
+                      Save Changes
                     </Button>
                   </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                </form>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Plans & Pricing</CardTitle>
+                    <CardDescription>
+                      Manage your product plans
+                    </CardDescription>
+                  </div>
+                  <Button onClick={addPlan} className="flex items-center">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Plan
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {formData.plans.map((plan, planIndex) => (
+                    <Card key={plan.id}>
+                      <CardHeader>
+                        <div className="flex items-center justify-between">
+                          <Input
+                            value={plan.name}
+                            onChange={(e) => handlePlanChange(planIndex, 'name', e.target.value)}
+                            placeholder="Plan name"
+                            className="max-w-xs"
+                          />
+                          {formData.plans.length > 1 && (
+                            <Button
+                              variant="destructive"
+                              size="icon"
+                              onClick={() => removePlan(planIndex)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <Textarea
+                          value={plan.description}
+                          onChange={(e) => handlePlanChange(planIndex, 'description', e.target.value)}
+                          placeholder="Plan description"
+                          rows={2}
+                        />
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label>Monthly Price ($)</Label>
+                            <Input
+                              type="number"
+                              value={plan.pricing.monthly}
+                              onChange={(e) => handlePlanChange(planIndex, 'pricing.monthly', Number(e.target.value))}
+                              className="mt-1"
+                            />
+                          </div>
+                          <div>
+                            <Label>Annual Price ($)</Label>
+                            <Input
+                              type="number"
+                              value={plan.pricing.annual}
+                              onChange={(e) => handlePlanChange(planIndex, 'pricing.annual', Number(e.target.value))}
+                              className="mt-1"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <Label>Features</Label>
+                          <div className="space-y-2 mt-1">
+                            {plan.features.map((feature, featureIndex) => (
+                              <div key={featureIndex} className="flex items-center space-x-2">
+                                <Input
+                                  value={feature}
+                                  onChange={(e) => handleFeatureChange(planIndex, featureIndex, e.target.value)}
+                                  placeholder="e.g. 10 GB Storage"
+                                />
+                                <Button
+                                  variant="destructive"
+                                  size="icon"
+                                  onClick={() => removeFeature(planIndex, featureIndex)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
+                            <Button
+                              variant="outline"
+                              onClick={() => addFeature(planIndex)}
+                              className="w-full mt-2"
+                            >
+                              <Plus className="h-4 w-4 mr-2" />
+                              Add Feature
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </Tabs>
       </div>
     </div>
   )

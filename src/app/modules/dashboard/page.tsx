@@ -1,78 +1,20 @@
 "use client"
 
-import { useState } from "react"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  Users,
-  DollarSign,
-  TrendingUp,
-  ArrowUpRight,
-  ArrowDownRight,
-  Activity,
-  CreditCard,
-} from "lucide-react"
-import {
-  LineChart,
-  Line,
-  BarChart,
   Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
 } from "recharts"
 
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart"
-
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-]
-
-const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "#2563eb",
-  },
-  mobile: {
-    label: "Mobile",
-    color: "#60a5fa",
-  },
-} satisfies ChartConfig
-
-// Dummy data for charts and metrics
+// Chart data
 const monthlyRevenue = [
   { month: "Jan", revenue: 50000 },
   { month: "Feb", revenue: 65000 },
@@ -82,149 +24,209 @@ const monthlyRevenue = [
   { month: "Jun", revenue: 95000 },
 ]
 
-const userGrowth = [
-  { month: "Jan", users: 100 },
-  { month: "Feb", users: 150 },
-  { month: "Mar", users: 200 },
-  { month: "Apr", users: 250 },
-  { month: "May", users: 300 },
-  { month: "Jun", users: 350 },
+const customerGrowth = [
+  { month: "Jan", customers: 100 },
+  { month: "Feb", customers: 150 },
+  { month: "Mar", customers: 200 },
+  { month: "Apr", customers: 250 },
+  { month: "May", customers: 300 },
+  { month: "Jun", customers: 350 },
 ]
 
-const recentCustomers = [
+interface Transaction {
+  id: string;
+  customer: {
+    name: string;
+    email: string;
+    avatar: string;
+  };
+  amount: number;
+  status: 'completed' | 'pending' | 'failed';
+  product: string;
+  date: string;
+}
+
+interface Customer {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+  joinDate: string;
+  status: 'active' | 'inactive';
+}
+
+interface Product {
+  id: string;
+  name: string;
+  status: 'active' | 'draft';
+  customers: number;
+  revenue: number;
+}
+
+// Mock data
+const mockTransactions: Transaction[] = [
   {
-    id: "1",
-    name: "Acme Corporation",
-    plan: "Enterprise",
-    status: "active",
-    joined: "2024-01-15",
+    id: 'TRX-001',
+    customer: {
+      name: 'Alice Johnson',
+      email: 'alice@example.com',
+      avatar: '/avatars/alice.jpg',
+    },
+    amount: 99.99,
+    status: 'completed',
+    product: 'Premium Plan',
+    date: '2024-03-15T10:00:00Z',
   },
   {
-    id: "2",
-    name: "TechStart Inc",
-    plan: "Pro",
-    status: "active",
-    joined: "2024-02-01",
+    id: 'TRX-002',
+    customer: {
+      name: 'Bob Smith',
+      email: 'bob@example.com',
+      avatar: '/avatars/bob.jpg',
+    },
+    amount: 199.99,
+    status: 'pending',
+    product: 'Enterprise Plan',
+    date: '2024-03-14T15:30:00Z',
   },
   {
-    id: "3",
-    name: "Global Solutions",
-    plan: "Business",
-    status: "active",
-    joined: "2024-02-15",
+    id: 'TRX-003',
+    customer: {
+      name: 'Carol Davis',
+      email: 'carol@example.com',
+      avatar: '/avatars/carol.jpg',
+    },
+    amount: 49.99,
+    status: 'failed',
+    product: 'Basic Plan',
+    date: '2024-03-14T09:15:00Z',
   },
-]
+];
+
+const mockRecentCustomers: Customer[] = [
+  {
+    id: 'CUST-001',
+    name: 'Bob Smith',
+    email: 'bob@example.com',
+    avatar: '/avatars/bob.jpg',
+    joinDate: '2024-03-14T15:30:00Z',
+    status: 'active',
+  },
+  {
+    id: 'CUST-002',
+    name: 'Alice Johnson',
+    email: 'alice@example.com',
+    avatar: '/avatars/alice.jpg',
+    joinDate: '2024-03-13T10:00:00Z',
+    status: 'active',
+  },
+  {
+    id: 'CUST-003',
+    name: 'Carol Davis',
+    email: 'carol@example.com',
+    avatar: '/avatars/carol.jpg',
+    joinDate: '2024-03-12T14:45:00Z',
+    status: 'inactive',
+  },
+];
+
+const mockRecentProducts: Product[] = [
+  {
+    id: 'PROD-001',
+    name: 'Enterprise Analytics Suite',
+    status: 'active',
+    customers: 45,
+    revenue: 4500,
+  },
+  {
+    id: 'PROD-002',
+    name: 'Professional Dashboard',
+    status: 'active',
+    customers: 78,
+    revenue: 3900,
+  },
+  {
+    id: 'PROD-003',
+    name: 'Basic Monitoring Tool',
+    status: 'draft',
+    customers: 0,
+    revenue: 0,
+  },
+];
 
 export default function DashboardPage() {
-  const [timeRange, setTimeRange] = useState<string>("month")
-
-  // Calculate metrics
-  const totalRevenue = 95000
-  const revenueGrowth = 15.5
-  const activeUsers = 350
-  const userGrowthRate = 25.0
-  const mrr = 95000 // Monthly Recurring Revenue
-  const mrrGrowth = 12.5
-  const churnRate = 2.5
-  const arpu = 271.43 // Average Revenue Per User
-
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <div className="flex items-center space-x-4">
-          <Select
-            value={timeRange}
-            onValueChange={setTimeRange}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select time range" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="week">Last 7 days</SelectItem>
-              <SelectItem value="month">Last 30 days</SelectItem>
-              <SelectItem value="quarter">Last 90 days</SelectItem>
-              <SelectItem value="year">Last year</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+    <div className="py-8 px-4 sm:px-6 lg:px-8">
+      {/* Overview Cards */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">
+              Total Revenue
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">$24,500</div>
+            <p className="text-xs text-green-500 flex items-center">
+              +15% from last month
+            </p>
+          </CardContent>
+        </Card>
 
-      {/* Key Metrics */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">
+              Active Customers
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalRevenue.toLocaleString()}</div>
-            <div className="flex items-center text-xs text-muted-foreground">
-              <ArrowUpRight className="h-4 w-4 text-green-500 mr-1" />
-              {revenueGrowth}% from last {timeRange}
-            </div>
+            <div className="text-2xl font-bold">156</div>
+            <p className="text-xs text-green-500 flex items-center">
+              +12 new this month
+            </p>
           </CardContent>
         </Card>
+
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">
+              Active Products
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{activeUsers}</div>
-            <div className="flex items-center text-xs text-muted-foreground">
-              <ArrowUpRight className="h-4 w-4 text-green-500 mr-1" />
-              {userGrowthRate}% from last {timeRange}
-            </div>
+            <div className="text-2xl font-bold">8</div>
+            <p className="text-xs text-gray-500 flex items-center">
+              2 drafts
+            </p>
           </CardContent>
         </Card>
+
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">MRR</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">
+              Avg. Revenue per Customer
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${mrr.toLocaleString()}</div>
-            <div className="flex items-center text-xs text-muted-foreground">
-              <ArrowUpRight className="h-4 w-4 text-green-500 mr-1" />
-              {mrrGrowth}% from last {timeRange}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Churn Rate</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{churnRate}%</div>
-            <div className="flex items-center text-xs text-muted-foreground">
-              <ArrowDownRight className="h-4 w-4 text-red-500 mr-1" />
-              0.5% decrease from last {timeRange}
-            </div>
+            <div className="text-2xl font-bold">$157</div>
+            <p className="text-xs text-green-500 flex items-center">
+              +5% from last month
+            </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Charts and Tables */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
+      {/* Charts */}
+      <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <Card>
           <CardHeader>
-            <CardTitle>Revenue Overview</CardTitle>
-            <CardDescription>Monthly revenue trends</CardDescription>
+            <CardTitle>Revenue Growth</CardTitle>
+            <CardDescription>Monthly revenue trend</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={monthlyRevenue}
-                  margin={{
-                    top: 5,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                  }}
-                >
+                <LineChart data={monthlyRevenue}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis />
@@ -232,81 +234,128 @@ export default function DashboardPage() {
                   <Line
                     type="monotone"
                     dataKey="revenue"
-                    stroke="#8884d8"
-                    activeDot={{ r: 8 }}
+                    stroke="#2563eb"
+                    strokeWidth={2}
                   />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
-        <Card className="col-span-3">
+
+        <Card>
           <CardHeader>
-            <CardTitle>User Growth</CardTitle>
-            <CardDescription>Monthly active users</CardDescription>
+            <CardTitle>Customer Growth</CardTitle>
+            <CardDescription>Customer acquisition trend</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[300px]">
-              <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-                <BarChart accessibilityLayer data={chartData}>
-                  <CartesianGrid vertical={false} />
-                  <XAxis
-                    dataKey="month"
-                    tickLine={false}
-                    tickMargin={10}
-                    axisLine={false}
-                    tickFormatter={(value) => value.slice(0, 3)}
-                  />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
-                  <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={customerGrowth}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="customers" fill="#2563eb" />
                 </BarChart>
-              </ChartContainer>
-
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Recent Customers */}
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle>Recent Customers</CardTitle>
-          <CardDescription>Latest customer signups</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Company</TableHead>
-                <TableHead>Plan</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Joined</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {recentCustomers.map((customer) => (
-                <TableRow key={customer.id}>
-                  <TableCell>{customer.name}</TableCell>
-                  <TableCell>{customer.plan}</TableCell>
-                  <TableCell>
-                    <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
-                      {customer.status}
-                    </span>
-                  </TableCell>
-                  <TableCell>{new Date(customer.joined).toLocaleDateString()}</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm">
-                      View Details
-                    </Button>
-                  </TableCell>
-                </TableRow>
+      {/* Recent Activity */}
+      <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Transactions</CardTitle>
+            <CardDescription>Latest customer payments</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {mockTransactions.map((transaction) => (
+                <div key={transaction.id} className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div>
+                      <p className="text-sm font-medium">{transaction.customer.name}</p>
+                      <p className="text-xs text-gray-500">{transaction.product}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium">${transaction.amount}</p>
+                    <Badge variant={
+                      transaction.status === 'completed' ? 'success' :
+                      transaction.status === 'pending' ? 'default' : 'destructive'
+                    }>
+                      {transaction.status}
+                    </Badge>
+                  </div>
+                </div>
               ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Customers</CardTitle>
+            <CardDescription>Latest customer signups</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {mockRecentCustomers.map((customer) => (
+                <div key={customer.id} className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div>
+                      <p className="text-sm font-medium">{customer.name}</p>
+                      <p className="text-xs text-gray-500">{customer.email}</p>
+                    </div>
+                  </div>
+                  <Badge variant={customer.status === 'active' ? 'success' : 'secondary'}>
+                    {customer.status}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Products */}
+      <div className="mt-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Products</CardTitle>
+            <CardDescription>Latest product performance</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {mockRecentProducts.map((product) => (
+                <Card key={product.id}>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-medium">{product.name}</h3>
+                      <Badge variant={product.status === 'active' ? 'success' : 'secondary'}>
+                        {product.status}
+                      </Badge>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-gray-500">Customers</p>
+                        <p className="font-medium">{product.customers}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">Revenue</p>
+                        <p className="font-medium">${product.revenue}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 } 

@@ -1,24 +1,22 @@
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { Metadata } from "next";
+import type { Metadata } from "next"
+import { Inter } from "next/font/google"
+import "./globals.css"
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: 'Modern SaaS Platform',
-  description: 'A modern SaaS platform with authentication and user management',
-};
+  title: "Product Cloud App",
+  description: "A modern SaaS platform for managing products and subscriptions",
+}
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        {children}
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
-  );
+  )
 }

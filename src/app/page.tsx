@@ -1,12 +1,12 @@
 'use client';
 
-import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { LogIn, ArrowRight, CheckCircle, Star, ChevronRight, BarChart3, LineChart, Menu, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { Logo } from '@/components/ui/logo';
+import { useAuth } from '@/hooks/useAuth';
+import { ArrowRight, BarChart3, CheckCircle, LineChart, Menu, Star, X } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function Home() {
   const { user, loading, login } = useAuth();

@@ -11,7 +11,7 @@ export interface Product {
 }
 
 export const productsApi = {
-  getAll: (data?:any) => fetchApi<Product[]>('/api/products', {
+  getAll: (data?:unknown) => fetchApi<Product[]>('/api/products', {
     method:'POST',
     body:JSON.stringify(data)
   }),
