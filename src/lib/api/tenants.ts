@@ -3,8 +3,12 @@ import { fetchApi } from './base'
 export interface Tenant {
   id: string
   name: string
+  orgnization: string
+  logo?: string
+  timezone: string
+  industry: string
   email: string
-  status: 'active' | 'inactive'
+  planType: number
   createdAt: string
   updatedAt: string
 }
@@ -16,6 +20,8 @@ export const tenantsApi = {
   }),
   
   getById: (id: string) => fetchApi<Tenant>(`/api/tenants/${id}`),
+
+  getByUserId: (userId: string) => fetchApi<Tenant>(`/api/tenants/user/${userId}`),
   
   create: (data: Omit<Tenant, 'id' | 'createdAt' | 'updatedAt'>) =>
     fetchApi<Tenant>('/api/tenants', {
@@ -33,4 +39,4 @@ export const tenantsApi = {
     fetchApi<void>(`/api/tenants/${id}`, {
       method: 'DELETE',
     }),
-} 
+}
