@@ -48,8 +48,8 @@ export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <div className="w-64 border-r bg-background">
-      <div className="space-y-4 py-4">
+    <div className="w-64 border-r bg-background dark:bg-gray-900 fixed h-screen top-16">
+      <div className="space-y-4 py-4 overflow-y-auto h-full">
         <div className="px-3 py-2">
           <div className="space-y-1">
             {routes.map((route) => (
@@ -60,7 +60,7 @@ export function Sidebar() {
                   'text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-primary hover:bg-primary/10 rounded-lg transition',
                   pathname === route.href
                     ? 'text-primary bg-primary/10'
-                    : 'text-muted-foreground'
+                    : 'text-muted-foreground dark:text-gray-300'
                 )}
               >
                 <div className="flex items-center flex-1">

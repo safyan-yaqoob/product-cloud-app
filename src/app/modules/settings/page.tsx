@@ -44,7 +44,7 @@ export default function SettingsPage() {
 
   return (
     <div className="py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="mx-auto">
         <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Settings</h1>
         
         <Tabs defaultValue="organization" className="mt-6">

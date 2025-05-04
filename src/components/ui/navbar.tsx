@@ -12,7 +12,7 @@ export function Navbar() {
   const router = useRouter()
 
   return (
-    <nav className="border-b bg-background sticky top-0 z-50">
+    <nav className="border-b bg-background dark:bg-gray-900 fixed top-0 w-full z-50 h-16">
       <div className="flex h-16 items-center px-4">
         <div className="flex items-center space-x-4">
           <Link href="/" className="flex items-center">
@@ -22,14 +22,14 @@ export function Navbar() {
         <div className="ml-auto flex items-center space-x-4">
           {user ? (
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-muted-foreground">
+              <span className="text-sm text-muted-foreground dark:text-gray-300">
                 {user.profile.email}
               </span>
               <Button 
                 variant="ghost" 
                 size="sm" 
                 onClick={() => logout()}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 text-gray-700 dark:text-gray-300"
               >
                 <LogOut className="h-4 w-4" />
                 Logout
@@ -39,7 +39,7 @@ export function Navbar() {
             <Button 
               onClick={() => router.push('/')}
               variant="ghost"
-              className="text-gray-600 hover:text-gray-900"
+              className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
             >
               Back to Home
             </Button>
