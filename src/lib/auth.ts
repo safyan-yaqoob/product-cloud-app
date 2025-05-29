@@ -17,7 +17,7 @@ export const createUserManager = () => {
     redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
     post_logout_redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
     response_type: 'code',
-    scope: 'openid profile email',
+    scope: `${process.env.NEXT_PUBLIC_AUTH_SCOPE}`,
     userStore: new WebStorageStateStore({ store: window.localStorage }),
   });
 };

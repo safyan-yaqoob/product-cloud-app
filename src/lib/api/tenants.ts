@@ -23,20 +23,17 @@ export const tenantsApi = {
 
   getByUserId: (userId: string) => fetchApi<Tenant>(`/api/tenants/user/${userId}`),
   
-  create: (data: Omit<Tenant, 'id' | 'createdAt' | 'updatedAt'>) =>
-    fetchApi<Tenant>('/api/tenants', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }),
+  create: (data: Omit<Tenant, 'id' | 'createdAt' | 'updatedAt'>) => fetchApi<Tenant>('/api/tenants', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
   
-  update: (id: string, data: Partial<Tenant>) =>
-    fetchApi<Tenant>(`/api/tenants/${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify(data),
-    }),
+  update: (id: string, data: Partial<Tenant>) => fetchApi<Tenant>(`/api/tenants/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  }),
   
-  delete: (id: string) =>
-    fetchApi<void>(`/api/tenants/${id}`, {
-      method: 'DELETE',
-    }),
+  delete: (id: string) => fetchApi<void>(`/api/tenants/${id}`, {
+    method: 'DELETE',
+  }),
 }

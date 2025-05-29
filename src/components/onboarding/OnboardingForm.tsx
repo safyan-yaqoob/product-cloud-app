@@ -150,6 +150,7 @@ export default function OnboardingForm() {
       }
 
       await tenantsApi.create(tenantData);
+      
       document.cookie = `tenant_info=${JSON.stringify({
         organizationName: formData.orgnization,
         timezone: formData.timezone,
@@ -183,8 +184,7 @@ export default function OnboardingForm() {
                   placeholder="Enter your name"
                   required
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                />
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}/>
               </div>
 
               <div className="space-y-2">
@@ -194,8 +194,7 @@ export default function OnboardingForm() {
                   placeholder="Enter your organization name"
                   required
                   value={formData.orgnization}
-                  onChange={(e) => setFormData({ ...formData, orgnization: e.target.value })}
-                />
+                  onChange={(e) => setFormData({ ...formData, orgnization: e.target.value })}/>
               </div>
 
               <div className="space-y-2">
@@ -206,8 +205,7 @@ export default function OnboardingForm() {
                   placeholder="Enter your contact email"
                   required
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                />
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}/>
               </div>
 
               <div className="space-y-2">
@@ -228,8 +226,7 @@ export default function OnboardingForm() {
                         className="h-8 w-8 text-muted-foreground"
                         fill="none"
                         viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
+                        stroke="currentColor">
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -252,8 +249,7 @@ export default function OnboardingForm() {
                 <Label htmlFor="timezone">Timezone</Label>
                 <Select
                   value={formData.timezone}
-                  onValueChange={(value) => setFormData({ ...formData, timezone: value })}
-                >
+                  onValueChange={(value) => setFormData({ ...formData, timezone: value })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select timezone" />
                   </SelectTrigger>
@@ -271,8 +267,7 @@ export default function OnboardingForm() {
                 <Label htmlFor="industry">Industry</Label>
                 <Select
                   value={formData.industry}
-                  onValueChange={(value) => setFormData({ ...formData, industry: value })}
-                >
+                  onValueChange={(value) => setFormData({ ...formData, industry: value })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select industry" />
                   </SelectTrigger>
@@ -290,8 +285,7 @@ export default function OnboardingForm() {
             <Button
               type="submit"
               className="w-full"
-              disabled={isSubmitting}
-            >
+              disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <svg
